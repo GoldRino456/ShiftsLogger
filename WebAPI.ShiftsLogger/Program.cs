@@ -1,9 +1,12 @@
+using WebAPI.ShiftsLogger.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+//Add db context to DI container here.
+builder.Services.AddScoped<IShiftsService, ShiftsService>();
 
 var app = builder.Build();
 
