@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using UI.ShiftsLogger;
 using UI.ShiftsLogger.Utilities;
 
 public enum MenuOptions
@@ -12,26 +13,32 @@ public enum MenuOptions
 
 class ShiftsLoggerUI
 {
-    static void Main()
+    static async void Main()
     {
         bool isAppRunning = true;
+        await RequestHandler.InitializeClient();
 
         while(isAppRunning)
         {
             var choice = DisplayMainMenu();
+            DisplayUtils.ClearScreen();
 
             switch(choice)
             {
                 case MenuOptions.CreateShift:
+                    MenuManager.CreateShift();
                     break;
                 
                 case MenuOptions.ViewShifts:
+                    MenuManager.ViewShifts();
                     break;
                     
                 case MenuOptions.UpdateShift:
+                    MenuManager.UpdateShift();
                     break;
                     
                 case MenuOptions.DeleteShift:
+                    MenuManager.DeleteShift();
                     break;
                     
                 case MenuOptions.Quit:

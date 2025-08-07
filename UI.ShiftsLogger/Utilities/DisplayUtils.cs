@@ -65,6 +65,28 @@ public static class DisplayUtils
         AnsiConsole.Write(table);
     }
 
+    public static DateTime PromptUserForDateTime(string promptText)
+    {
+        DateTime input = DateTime.MinValue;
+
+        AnsiConsole.Prompt(
+            new TextPrompt<string>(promptText)
+            .Validate(n =>
+            {
+                if (DateTime.TryParse(n, out input))
+                {
+                    return ValidationResult.Success();
+                }
+                else
+                {
+                    DisplayMessageToUser("Input is not valid. Please enter a date and time (Ex. May 1 2024 7pm).");
+                    return ValidationResult.Error();
+                }
+            }));
+
+        return input;
+    }
+
     public static string PromptUserForStringInput(string promptText)
     {
         var input = AnsiConsole.Prompt(
