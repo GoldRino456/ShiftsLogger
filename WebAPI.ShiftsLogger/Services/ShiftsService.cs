@@ -6,8 +6,8 @@ public interface IShiftsService
 {
     public List<Shift> GetAllShifts();
     public Shift? GetShiftById(int id);
-    public Shift CreateShift(Shift shift);
-    public Shift UpdateShift(int id, Shift shift);
+    public Shift CreateShift(ShiftDTO dto);
+    public Shift UpdateShift(int id, ShiftDTO dto);
     public string? DeleteShift(int id);
 }
 
@@ -20,8 +20,9 @@ public class ShiftsService : IShiftsService
         _dbContext = context;
     }
 
-    public Shift CreateShift(Shift shift)
+    public Shift CreateShift(ShiftDTO dto)
     {
+        var shift = ConvertDtoToShift(dto);
         var savedShift = _dbContext.Shifts.Add(shift);
         _dbContext.SaveChanges();
         return savedShift.Entity;
@@ -53,7 +54,7 @@ public class ShiftsService : IShiftsService
         return savedShift == null ? null : savedShift;
     }
 
-    public Shift UpdateShift(int id, Shift shift)
+    public Shift UpdateShift(int id, ShiftDTO dto)
     {
         Shift savedShift = _dbContext.Shifts.Find(id);
 
@@ -62,9 +63,23 @@ public class ShiftsService : IShiftsService
             return null;
         }
 
+        var shift = ConvertDtoToShift(dto);
+
+        shift.Id = savedShift.Id;
         _dbContext.Entry(savedShift).CurrentValues.SetValues(shift);
         _dbContext.SaveChanges();
 
         return savedShift;
+    }
+
+    private Shift ConvertDtoToShift(ShiftDTO dto)
+    {
+        Shift newShift = new();
+
+        newShift.clockInTime = dto.clockInTime;
+        newShift.clockOutTime = dto.clockOutTime;
+        newShift.durationInHours = dto.durationInHours;
+
+        return newShift;
     }
 }

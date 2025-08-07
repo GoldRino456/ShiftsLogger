@@ -17,30 +17,58 @@ public class ShiftsController : ControllerBase
     [HttpGet]
     public ActionResult<List<Shift>> GetAllShifts()
     {
-        return Ok(_shiftsService.GetAllShifts());
+        var shifts = _shiftsService.GetAllShifts();
+
+        if(shifts == null || shifts.Count <= 0)
+        {
+            return NoContent();
+        }
+
+        return Ok(shifts);
     }
 
     [HttpGet("{id}")]
     public ActionResult<Shift> GetShiftById(int id)
     {
-        return Ok(_shiftsService.GetShiftById(id));
+        var selectedShift = _shiftsService.GetShiftById(id);
+
+        if(selectedShift == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(selectedShift);
     }
 
     [HttpPost]
-    public ActionResult<Shift> CreateShift(Shift shift)
+    public ActionResult<Shift> CreateShift(ShiftDTO dto)
     {
-        return Ok(_shiftsService.CreateShift(shift));
+        return Ok(_shiftsService.CreateShift(dto));
     }
 
     [HttpPut("{id}")]
-    public ActionResult<Shift> UpdateShift(int id, Shift shift)
+    public ActionResult<Shift> UpdateShift(int id, ShiftDTO dto)
     {
-        return Ok(_shiftsService.UpdateShift(id, shift));
+        var selectedShift = _shiftsService.GetShiftById(id);
+
+        if (selectedShift == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(_shiftsService.UpdateShift(id, dto));
     }
 
     [HttpDelete("{id}")]
     public ActionResult<string> DeleteShift(int id)
     {
+        var selectedShift = _shiftsService.GetShiftById(id);
+
+        if (selectedShift == null)
+        {
+            return NotFound();
+        }
+
         return Ok(_shiftsService.DeleteShift(id));
     }
 }
