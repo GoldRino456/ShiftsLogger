@@ -13,10 +13,14 @@ public enum MenuOptions
 
 class ShiftsLoggerUI
 {
-    static async void Main()
+    static void Main()
     {
         bool isAppRunning = true;
-        await RequestHandler.InitializeClient();
+
+        Task.Run(async () => 
+        { 
+            await RequestHandler.InitializeClient(); 
+        }).GetAwaiter().GetResult();
 
         while(isAppRunning)
         {
