@@ -6,18 +6,11 @@ namespace UI.ShiftsLogger;
 
 public static class MenuManager
 {
-    public static async void CreateShift()
+    public static async Task CreateShift()
     {
         while(true)
         {
-            PromptForShiftDetails(out DateTime clockInTime, out DateTime clockOutTime);
-
-            Shift newShift = new()
-            {
-                ClockInTime = clockInTime,
-                ClockOutTime = clockOutTime,
-                DurationInHours = (float)(clockOutTime - clockInTime).TotalHours
-            };
+            var newShift = PromptUserForNewShift();
 
             DisplayShiftDetails(newShift);
             if (DisplayUtils.PromptUserForYesOrNoSelection("Are the details above correct?"))
@@ -69,16 +62,7 @@ public static class MenuManager
 
         if (allShifts != null)
         {
-            int idx = 1;
-            foreach (Shift shift in allShifts)
-            {
-                DisplayUtils.DisplayMessageToUser($"{idx}:" 
-                    + $"\n\tClock-In: {shift.ClockInTime.ToShortDateString()} {shift.ClockInTime.ToShortTimeString()}"
-                    + $"\n\tClock-Out: {shift.ClockOutTime.ToShortDateString()} {shift.ClockOutTime.ToShortTimeString()}"
-                    + $"\n\tTotal Hours Worked: {shift.DurationInHours} hrs");
-
-                idx++;
-            }
+            DisplayShiftsList(allShifts);
         }
         else
         {
@@ -89,9 +73,109 @@ public static class MenuManager
         DisplayUtils.ClearScreen();
     }
 
-    public static void UpdateShift()
+    private static void DisplayShiftsList(List<Shift> allShifts)
     {
+        int idx = 1;
+        foreach (Shift shift in allShifts)
+        {
+            DisplayUtils.DisplayMessageToUser($"{idx}:"
+                + $"\n\tClock-In: {shift.ClockInTime.ToShortDateString()} {shift.ClockInTime.ToShortTimeString()}"
+                + $"\n\tClock-Out: {shift.ClockOutTime.ToShortDateString()} {shift.ClockOutTime.ToShortTimeString()}"
+                + $"\n\tTotal Hours Worked: {shift.DurationInHours} hrs");
 
+            idx++;
+        }
+    }
+
+    public static async Task UpdateShift()
+    {
+        DisplayUtils.DisplayMessageToUser("Fetching records from database. Please wait...");
+        List<Shift>? allShifts = await RequestHandler.ViewAllShifts();
+        DisplayUtils.ClearScreen();
+
+        if (allShifts != null)
+        {
+            var selectedShiftIndex = SelectShiftFromList(allShifts, "Please enter a number for the record above you wish to update: ");
+            var selectedShift = allShifts[selectedShiftIndex];
+
+            while (true)
+            {
+                var updatedShift = PromptUserForNewShift();
+
+                DisplayUtils.ClearScreen();
+                DisplayUtils.DisplayMessageToUser("Current Shift Details: ");
+                DisplayShiftDetails(selectedShift);
+                DisplayUtils.DisplayMessageToUser("\n");
+                DisplayUtils.DisplayMessageToUser("New Shift Details: ");
+                DisplayShiftDetails(updatedShift);
+                DisplayUtils.DisplayMessageToUser("\n");
+
+                if (DisplayUtils.PromptUserForYesOrNoSelection("Are the changes shown above correct?"))
+                {
+                    DisplayUtils.ClearScreen();
+                    await RequestHandler.UpdateShift(selectedShift.Id, updatedShift);
+                    return;
+                }
+                else
+                {
+                    DisplayUtils.ClearScreen();
+
+                    if (DisplayUtils.PromptUserForYesOrNoSelection("Would you like to continue updating this shift? (Select \"No\" to return to the Main Menu)."))
+                    {
+                        DisplayUtils.ClearScreen();
+                        continue;
+                    }
+                    else
+                    {
+                        DisplayUtils.ClearScreen();
+                        return;
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            DisplayUtils.DisplayMessageToUser("No shifts to update.");
+        }
+
+        DisplayUtils.PressAnyKeyToContinue();
+        DisplayUtils.ClearScreen();
+    }
+
+    private static Shift PromptUserForNewShift()
+    {
+        PromptForShiftDetails(out DateTime clockInTime, out DateTime clockOutTime);
+
+        Shift newShift = new()
+        {
+            ClockInTime = clockInTime,
+            ClockOutTime = clockOutTime,
+            DurationInHours = (float)(clockOutTime - clockInTime).TotalHours
+        };
+
+        return newShift;
+    }
+
+    private static int SelectShiftFromList(List<Shift> allShifts, string promptMessage)
+    {
+        while (true)
+        {
+            DisplayShiftsList(allShifts);
+            var selection = DisplayUtils.PromptUserForStringInput(promptMessage);
+
+            //Is valid number within range?
+            if (Int32.TryParse(selection, out var indexNum) && indexNum > 0 && indexNum <= allShifts.Count)
+            {
+                return indexNum - 1;
+            }
+            else
+            {
+                DisplayUtils.DisplayMessageToUser("Number entered isn't a valid selection. Please only enter a number from the list above.");
+                DisplayUtils.PressAnyKeyToContinue();
+                DisplayUtils.ClearScreen();
+            }
+        }
     }
 
     public static void DeleteShift()

@@ -26,7 +26,7 @@ class ShiftsLoggerUI
             switch(choice)
             {
                 case MenuOptions.CreateShift:
-                    MenuManager.CreateShift();
+                    await MenuManager.CreateShift();
                     break;
                 
                 case MenuOptions.ViewShifts:
@@ -34,7 +34,7 @@ class ShiftsLoggerUI
                     break;
                     
                 case MenuOptions.UpdateShift:
-                    MenuManager.UpdateShift();
+                    await MenuManager.UpdateShift();
                     break;
                     
                 case MenuOptions.DeleteShift:

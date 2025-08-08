@@ -30,7 +30,6 @@ public static class RequestHandler
             DisplayUtils.PressAnyKeyToContinue();
             return false;
         }
-        
     }
 
     public static async Task<List<Shift>?> ViewAllShifts()
@@ -51,5 +50,21 @@ public static class RequestHandler
         }
 
         return shifts;
+    }
+
+    public static async Task<bool> UpdateShift(int id, Shift updatedShift)
+    {
+        try
+        {
+            HttpResponseMessage response = await _client.PutAsJsonAsync($"api/Shifts/{id}", updatedShift);
+            response.EnsureSuccessStatusCode();
+            return true;
+        }
+        catch (Exception e)
+        {
+            DisplayUtils.DisplayMessageToUser($"Failed to add the shift to database. \nError Message: {e.Message}");
+            DisplayUtils.PressAnyKeyToContinue();
+            return false;
+        }
     }
 }
