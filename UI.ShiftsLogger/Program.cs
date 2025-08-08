@@ -38,7 +38,7 @@ class ShiftsLoggerUI
                     break;
                     
                 case MenuOptions.DeleteShift:
-                    MenuManager.DeleteShift();
+                    await MenuManager.DeleteShift();
                     break;
                     
                 case MenuOptions.Quit:

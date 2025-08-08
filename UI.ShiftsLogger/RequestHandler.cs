@@ -11,7 +11,7 @@ public static class RequestHandler
 
     public static async Task InitializeClient()
     {
-        _client.BaseAddress = new Uri("https://localhost:7051/");
+        _client.BaseAddress = new Uri("https://localhost:8080/");
         _client.DefaultRequestHeaders.Accept.Clear();
         _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
@@ -27,7 +27,6 @@ public static class RequestHandler
         catch (Exception e)
         {
             DisplayUtils.DisplayMessageToUser($"Failed to add the shift to database. \nError Message: {e.Message}");
-            DisplayUtils.PressAnyKeyToContinue();
             return false;
         }
     }
@@ -45,7 +44,6 @@ public static class RequestHandler
         catch (Exception e)
         {
             DisplayUtils.DisplayMessageToUser($"Failed to retrieve shifts from database. \nError Message: {e.Message}");
-            DisplayUtils.PressAnyKeyToContinue();
             return null;
         }
 
@@ -63,7 +61,21 @@ public static class RequestHandler
         catch (Exception e)
         {
             DisplayUtils.DisplayMessageToUser($"Failed to add the shift to database. \nError Message: {e.Message}");
-            DisplayUtils.PressAnyKeyToContinue();
+            return false;
+        }
+    }
+
+    public static async Task<bool> DeleteShift(int id)
+    {
+        try
+        {
+            HttpResponseMessage response = await _client.DeleteAsync($"api/Shifts/{id}");
+            response.EnsureSuccessStatusCode();
+            return true;
+        }
+        catch (Exception e)
+        {
+            DisplayUtils.DisplayMessageToUser($"Failed to delete the shift from the database. \nError Message: {e.Message}");
             return false;
         }
     }

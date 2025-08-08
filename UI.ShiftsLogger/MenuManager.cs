@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using UI.ShiftsLogger.Data;
+﻿using UI.ShiftsLogger.Data;
 using UI.ShiftsLogger.Utilities;
 
 namespace UI.ShiftsLogger;
@@ -16,7 +15,13 @@ public static class MenuManager
             if (DisplayUtils.PromptUserForYesOrNoSelection("Are the details above correct?"))
             {
                 DisplayUtils.ClearScreen();
-                await RequestHandler.CreateNewShift(newShift);
+                
+                if(!await RequestHandler.CreateNewShift(newShift))
+                {
+                    DisplayUtils.PressAnyKeyToContinue();
+                    DisplayUtils.ClearScreen();
+                }
+
                 return;
             }
             else
@@ -57,11 +62,11 @@ public static class MenuManager
     public static async Task ViewShifts()
     {
         DisplayUtils.DisplayMessageToUser("Fetching records from database. Please wait...");
-        List<Shift>? allShifts = await RequestHandler.ViewAllShifts();
-        DisplayUtils.ClearScreen();
+        List<Shift>? allShifts = await RequestHandler.ViewAllShifts(); 
 
         if (allShifts != null)
         {
+            DisplayUtils.ClearScreen();
             DisplayShiftsList(allShifts);
         }
         else
@@ -91,10 +96,10 @@ public static class MenuManager
     {
         DisplayUtils.DisplayMessageToUser("Fetching records from database. Please wait...");
         List<Shift>? allShifts = await RequestHandler.ViewAllShifts();
-        DisplayUtils.ClearScreen();
 
         if (allShifts != null)
         {
+            DisplayUtils.ClearScreen();
             var selectedShiftIndex = SelectShiftFromList(allShifts, "Please enter a number for the record above you wish to update: ");
             var selectedShift = allShifts[selectedShiftIndex];
 
@@ -178,9 +183,56 @@ public static class MenuManager
         }
     }
 
-    public static void DeleteShift()
+    public static async Task DeleteShift()
     {
+        DisplayUtils.DisplayMessageToUser("Fetching records from database. Please wait...");
+        List<Shift>? allShifts = await RequestHandler.ViewAllShifts();
 
+        if (allShifts != null)
+        {
+            DisplayUtils.ClearScreen();
+
+            while (true)
+            {
+                var selectedShiftIndex = SelectShiftFromList(allShifts, "Please enter a number for the record above you wish to delete: ");
+                var selectedShift = allShifts[selectedShiftIndex];
+
+                DisplayUtils.ClearScreen();
+                DisplayUtils.DisplayMessageToUser("Shift Details: ");
+                DisplayShiftDetails(selectedShift);
+                DisplayUtils.DisplayMessageToUser("\n");
+
+                if (DisplayUtils.PromptUserForYesOrNoSelection("Are you sure you want to delete this shift? (This cannot be undone!)"))
+                {
+                    DisplayUtils.ClearScreen();
+                    await RequestHandler.DeleteShift(selectedShift.Id);
+                    return;
+                }
+                else
+                {
+                    DisplayUtils.ClearScreen();
+
+                    if (DisplayUtils.PromptUserForYesOrNoSelection("Would you like to select a different shift to delete? (Select \"No\" to return to the Main Menu)."))
+                    {
+                        DisplayUtils.ClearScreen();
+                        continue;
+                    }
+                    else
+                    {
+                        DisplayUtils.ClearScreen();
+                        return;
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            DisplayUtils.DisplayMessageToUser("No shifts to delete!");
+        }
+
+        DisplayUtils.PressAnyKeyToContinue();
+        DisplayUtils.ClearScreen();
     }
 
     private static void DisplayShiftDetails(Shift shift)
