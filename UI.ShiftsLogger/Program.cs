@@ -13,14 +13,10 @@ public enum MenuOptions
 
 class ShiftsLoggerUI
 {
-    static void Main()
+    static async Task Main()
     {
         bool isAppRunning = true;
-
-        Task.Run(async () => 
-        { 
-            await RequestHandler.InitializeClient(); 
-        }).GetAwaiter().GetResult();
+        await RequestHandler.InitializeClient(); 
 
         while(isAppRunning)
         {
@@ -34,7 +30,7 @@ class ShiftsLoggerUI
                     break;
                 
                 case MenuOptions.ViewShifts:
-                    MenuManager.ViewShifts();
+                    await MenuManager.ViewShifts();
                     break;
                     
                 case MenuOptions.UpdateShift:

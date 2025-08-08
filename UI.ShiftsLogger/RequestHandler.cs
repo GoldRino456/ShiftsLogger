@@ -32,4 +32,24 @@ public static class RequestHandler
         }
         
     }
+
+    public static async Task<List<Shift>?> ViewAllShifts()
+    {
+        List<Shift>? shifts = null;
+
+        try
+        {
+            HttpResponseMessage response = await _client.GetAsync("api/Shifts");
+            response.EnsureSuccessStatusCode();
+            shifts = response.Content.ReadFromJsonAsync<List<Shift>>().Result;
+        }
+        catch (Exception e)
+        {
+            DisplayUtils.DisplayMessageToUser($"Failed to retrieve shifts from database. \nError Message: {e.Message}");
+            DisplayUtils.PressAnyKeyToContinue();
+            return null;
+        }
+
+        return shifts;
+    }
 }

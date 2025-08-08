@@ -1,4 +1,5 @@
-﻿using UI.ShiftsLogger.Data;
+﻿using System.Threading.Tasks;
+using UI.ShiftsLogger.Data;
 using UI.ShiftsLogger.Utilities;
 
 namespace UI.ShiftsLogger;
@@ -60,9 +61,32 @@ public static class MenuManager
         }
     }
 
-    public static void ViewShifts()
+    public static async Task ViewShifts()
     {
+        DisplayUtils.DisplayMessageToUser("Fetching records from database. Please wait...");
+        List<Shift>? allShifts = await RequestHandler.ViewAllShifts();
+        DisplayUtils.ClearScreen();
 
+        if (allShifts != null)
+        {
+            int idx = 1;
+            foreach (Shift shift in allShifts)
+            {
+                DisplayUtils.DisplayMessageToUser($"{idx}:" 
+                    + $"\n\tClock-In: {shift.ClockInTime.ToShortDateString()} {shift.ClockInTime.ToShortTimeString()}"
+                    + $"\n\tClock-Out: {shift.ClockOutTime.ToShortDateString()} {shift.ClockOutTime.ToShortTimeString()}"
+                    + $"\n\tTotal Hours Worked: {shift.DurationInHours} hrs");
+
+                idx++;
+            }
+        }
+        else
+        {
+            DisplayUtils.DisplayMessageToUser("No shifts to display.");
+        }
+
+        DisplayUtils.PressAnyKeyToContinue();
+        DisplayUtils.ClearScreen();
     }
 
     public static void UpdateShift()
