@@ -16,7 +16,7 @@ class ShiftsLoggerUI
     static async Task Main()
     {
         bool isAppRunning = true;
-        await RequestHandler.InitializeClient(); 
+        RequestHandler.InitializeClient(); 
 
         while(isAppRunning)
         {

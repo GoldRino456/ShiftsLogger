@@ -76,9 +76,9 @@ public class ShiftsService : IShiftsService
     {
         Shift newShift = new();
 
-        newShift.clockInTime = dto.clockInTime;
-        newShift.clockOutTime = dto.clockOutTime;
-        newShift.durationInHours = dto.durationInHours;
+        newShift.ClockInTime = dto.ClockInTime;
+        newShift.ClockOutTime = dto.ClockOutTime;
+        newShift.DurationInHours = dto.DurationInHours;
 
         return newShift;
     }

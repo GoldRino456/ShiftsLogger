@@ -9,7 +9,7 @@ public static class RequestHandler
 {
     private static readonly HttpClient _client = new();
 
-    public static async Task InitializeClient()
+    public static void InitializeClient()
     {
         _client.BaseAddress = new Uri("https://localhost:8080/");
         _client.DefaultRequestHeaders.Accept.Clear();

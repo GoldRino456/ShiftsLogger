@@ -3,7 +3,7 @@
 public class Shift
 {
     public int Id { get; set; }
-    public DateTime clockInTime { get; set; }
-    public DateTime clockOutTime { get; set; }
-    public float durationInHours { get; set; }
+    public DateTime ClockInTime { get; set; }
+    public DateTime ClockOutTime { get; set; }
+    public float DurationInHours { get; set; }
 }
